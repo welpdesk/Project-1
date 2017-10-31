@@ -41,8 +41,10 @@ async function run() {
   await page.keyboard.type(CREDS.email).catch(err => console.log(err));
   await page.click(PW_SELECTOR).catch(err => console.log(err));
   await page.keyboard.type(CREDS.password).catch(err => console.log(err));
+  
   await page.click(SIGNIN_BTN).catch(err => console.log(err));
-  await page.waitForNavigation().catch(err => console.log(err));
+
+  await page.waitForNavigation();
 
   const SEARCH_QUERY = 'software engineer';
   const URL = `https://www.glassdoor.com/Job/jobs.htm?clickSource=searchBtn&typedKeyword=${SEARCH_QUERY}&sc.keyword=${SEARCH_QUERY}`;
@@ -86,9 +88,7 @@ async function run() {
       });
       
       // retrieve only the links from the href attributes in li elements
-      const links = filtJobLinks.map((node) => {
-        return node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
-      });
+      const links = filtJobLinks.map((node) => node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href);
       
       return links
     }).catch(err => console.log(err));
@@ -104,7 +104,8 @@ async function run() {
     count++;
     if (nextExists) await page.click(NEXT_PAGE_SELECTOR).catch(err => console.log(err));
   }
-
+  // console.log('ALL JOBS >>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  // console.log(EASYAPPLYJOBS);
 
   const SUCCESSES = {};
 
@@ -122,8 +123,8 @@ async function run() {
       -> Select Resume
       -> Sumbit
     * * * * */
+    // console.log('Going to apply page');
     await page.goto(EASYAPPLYJOBS[i]).catch(err => console.log(err));
-    await page.waitForNavigation().catch(err => console.log(err));
 
     /* * * * * 
       Sometimes GlassDoor has a random module pop up with information, so this will allow us to close that module
@@ -139,11 +140,13 @@ async function run() {
     // }
 
     // click to apply
+    // console.log('Clicking apply btn');
     const APPLY_BTN = '.ezApplyBtn';
     await page.click(APPLY_BTN).catch(err => console.log(err));
-    await page.waitForNavigation().catch(err => console.log(err));
+    await page.waitForNavigation();
 
-    
+    // clear form inputs
+    await page.evaluate(() => document.getElementById('ApplyJobForm').reset());
 
     // fill in user's name
     const INPUT_NAME = '#ApplicantName';
@@ -154,28 +157,19 @@ async function run() {
     await page.select('select#ExistingResume', 'Resume.pdf').catch(err => console.log(err));
     
     // SUBMIT!
+    // console.log('Submitting');
     const SUMBIT_BTN = '#SubmitBtn';
-    await page.click(SUMBIT_BTN).then(success => {
-      SUCCESSES[EASYAPPLYJOBS[i]] = true;
-    }, error => {
-      SUCCESSES[EASYAPPLYJOBS[i]] = false;
-    });
+    await page.click(SUMBIT_BTN).catch(err => console.log(err));
+    await page.waitFor(3000);
+    const errExists = await page.evaluate(() => document.getElementById('#FormErrHdr') !== undefined);
+    const succExists = await page.evaluate(() => document.getElementsByClassName('successBox gdAlertBox noMargBot').length !== 0);
+    // console.log('errSubmitting', errExists);
+    // console.log('succSubmitting', succExists);
+    if (errExists) SUCCESSES[EASYAPPLYJOBS[i]] = false;
+    else if (succExists) SUCCESSES[EASYAPPLYJOBS[i]] = true;
   };
-  console.log(SUCCESSES);
-
-  // for(let i = 0; i < EASYAPPLYJOBS.length - 1; i += 1) {
-  //   await page.goto(EASYAPPLYJOBS[i]);
-    
-  //   const APPLY_BTN = '.indeed-apply-button';
-  //   await page.click(APPLY_BTN);
-  //   await page.waitFor(10 * 1000);
-
-  //   // let APPLY_SUBMIT1 = '#button_content'
-  //   let APPLY_SUBMIT2 = '.form-page-next'; //most popular one
-  //   await page.click('a[href="#next"]');
-
-  // }
-
+  // console.log('Successes >>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  // console.log(SUCCESSES);
 
 } 
 
