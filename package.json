@@ -28,6 +28,7 @@
   "dependencies": {
     "express": "^4.16.2",
     "mongoose": "^4.12.4",
+    "passport": "^0.4.0",
     "puppeteer": "^0.12.0"
   },
   "devDependencies": {
