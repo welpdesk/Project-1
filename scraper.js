@@ -20,12 +20,12 @@ async function run() {
     height: 768
   });
 
-  await page.goto('https://www.glassdoor.com/');
+  await page.goto('https://www.glassdoor.com/').catch(err => console.log(err));
 
   // Signing in: 
   // setting sign-in link string id to a variable
   const SIGNIN_SELECTOR = '.sign-in';
-  await page.click(SIGNIN_SELECTOR);
+  await page.click(SIGNIN_SELECTOR).catch(err => console.log(err));
 
   const EMAIL_SELECTOR = '#signInUsername';
   const PW_SELECTOR = '#signInPassword';
@@ -33,42 +33,23 @@ async function run() {
   /* * * * * 
     wait for all selectors and btn to be on page
   * * * * */
-  await page.waitForSelector(EMAIL_SELECTOR);
-  await page.waitForSelector(PW_SELECTOR);
-  await page.waitForSelector(SIGNIN_BTN);
+  await page.waitForSelector(EMAIL_SELECTOR).catch(err => console.log(err));
+  await page.waitForSelector(PW_SELECTOR).catch(err => console.log(err));
+  await page.waitForSelector(SIGNIN_BTN).catch(err => console.log(err));
   await page.waitForSelector('#SignInModule');
-  await page.click(EMAIL_SELECTOR);
-  await page.keyboard.type(CREDS.email);
-  await page.click(PW_SELECTOR);
-  await page.keyboard.type(CREDS.password);
-  await page.click(SIGNIN_BTN);
-  await page.waitForNavigation();
+  await page.click(EMAIL_SELECTOR).catch(err => console.log(err));
+  await page.keyboard.type(CREDS.email).catch(err => console.log(err));
+  await page.click(PW_SELECTOR).catch(err => console.log(err));
+  await page.keyboard.type(CREDS.password).catch(err => console.log(err));
+  await page.click(SIGNIN_BTN).catch(err => console.log(err));
+  await page.waitForNavigation().catch(err => console.log(err));
 
-  const SEARCH_QUERY = 'developer';
+  const SEARCH_QUERY = 'software engineer';
   const URL = `https://www.glassdoor.com/Job/jobs.htm?clickSource=searchBtn&typedKeyword=${SEARCH_QUERY}&sc.keyword=${SEARCH_QUERY}`;
   
-  await page.goto(URL);
+  await page.goto(URL).catch(err => console.log(err));
 
   const EASYAPPLYJOBS = [];
-
-  // const EASYAPPLYJOBS = await page.evaluate(() => {
-  //   // put all li elements containing job results into an array
-  //   const jobListElems = Array.from(document.getElementsByClassName('jl'));
-
-  //   // filter the li elements so that the array will only contain those with a div that indicates easy apply is available (one click apply - through glassdoor and not external site)
-  //   const filtJobLinks = jobListElems.filter(node => {
-  //     let div = node.childNodes[1].childNodes[1].childNodes[1];
-  //     return (div !== undefined) ? div.getAttribute('class') === 'alignRt' : false
-  //   });
-
-  //   // retrieve only the links from the href attributes in li elements
-  //   const links = filtJobLinks.map((node) => {
-  //     return node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
-  //   });
-  //   console.log(window.location.href);
-  //   return links;
-  // });
-  // console.log(EASYAPPLYJOBS);
 
   /* * * * * 
       Navigates to every pagination page in results and collects the links to the job listings that can be applied to using 'Easy Apply' and puts then into an array
@@ -76,41 +57,42 @@ async function run() {
   const NEXT_PAGE_SELECTOR = 'li.next';
   let nextExists = true;
   let count = 0;
-  while (count < 20) {
+  while (count === 0) {
     /* * * * * 
       check if module pops up and close -- GlassDoor has an module that pops up each time a pagination page is navigated to
     * * * * */
     // waiting for module to load
-    await page.waitFor(1000);
+    await page.waitFor(3000);
     const clExists = await page.evaluate(() => {
       return document.getElementsByClassName('mfp-close').length !== 0;
-    });
+    }).catch(err => console.log(err));
     
     if (clExists) {
-      await page.click('.mfp-close');
+      await page.click('.mfp-close').catch(err => console.log(err));
     }
 
     /* * * * * 
       -> iterating through all li elements that contain the job listings and checking if they contain the easy apply element indicating that the job can be applied through GlassDoor's website
       -> then retrieves all href attributes for the links to those listings
     * * * * */
-    // const temp = await page.evaluate(() => {
-    //   // put all li elements containing job results into an array
-    //   const jobListElems = Array.from(document.getElementsByClassName('jl'));
+    const temp = await page.evaluate(() => {
+      // put all li elements containing job results into an array
+      const jobListElems = Array.from(document.getElementsByClassName('jl'));
 
-    //   // filter the li elements so that the array will only contain those with a div that indicates easy apply is available (one click apply - through glassdoor and not external site)
-    //   const filtJobLinks = jobListElems.filter(node => {
-    //     let div = node.childNodes[1].childNodes[1].childNodes[1];
-    //     return (div !== undefined) ? div.getAttribute('class') === 'alignRt' : false
-    //   });
-
-    //   // retrieve only the links from the href attributes in li elements
-    //   const links = filtJobLinks.map((node) => {
-    //     return node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
-    //   });
-    //   return links
-    // });
-    // EASYAPPLYJOBS.push(...temp);
+      // filter the li elements so that the array will only contain those with a div that indicates easy apply is available (one click apply - through glassdoor and not external site)
+      const filtJobLinks = jobListElems.filter(node => {
+        let div = node.childNodes[1].childNodes[1].childNodes[1];
+        return (div !== undefined) ? div.getAttribute('class') === 'alignRt' : false
+      });
+      
+      // retrieve only the links from the href attributes in li elements
+      const links = filtJobLinks.map((node) => {
+        return node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
+      });
+      
+      return links
+    }).catch(err => console.log(err));
+    EASYAPPLYJOBS.push(...temp);
 
     /* * * * * 
       check if next tab exists - attempt to figure out when the pagination ends but needs modification because next tab always exists --- even when at the last pagination page
@@ -118,47 +100,69 @@ async function run() {
     nextExists = await page.evaluate(() => {
       const arr = Array.from(document.getElementsByClassName('next'));
       return arr[0] !== undefined;
-    });
+    }).catch(err => console.log(err));
     count++;
-    if (nextExists) await page.click(NEXT_PAGE_SELECTOR);
+    if (nextExists) await page.click(NEXT_PAGE_SELECTOR).catch(err => console.log(err));
   }
-  console.log(EASYAPPLYJOBS);
 
 
+  const SUCCESSES = {};
 
-
-
-
-
-
-  // for (let INDEX = 0; INDEX <= 40; INDEX += 10) {
-  //   const searchURL = `https://www.indeed.com/jobs?q=developer&l=New+York%2C+NY&start=${INDEX}`;
+  /* * * * * 
+    Looping through all of the links in the array and applying to those jobs
+  * * * * */
+  for(let i = 0; i < EASYAPPLYJOBS.length - 1; i += 1) {
     
-  //   if (INDEX === 0) { // first page 
-  //     const searchURL = 'https://www.indeed.com/jobs?q=developer&l=New+York%2C+NY';
-  //     await page.goto(searchURL);
-  //     await page.reload({ waitUntil: 'load' }); // if use reload MAKE SURE THERE"S NO await page.waitForNavigation();
-    
-  //   } else {
-  //     await page.goto(searchURL)
-  //     await page.reload({ waitUntil: 'load' }); 
-  //   }
-    
-  //   const hrefs = await page.evaluate(() => {
-  //     const anchors = document.querySelectorAll('a');
-  //     return [].map.call(anchors, a => a.href);
-  //   });
-  //   // console.log(hrefs);
 
-  //   for (let i = 0; i < hrefs.length; i++) {
-  //     if (hrefs[i].includes('/company/'))/* || hrefs[i].includes('pagead'))*/ {
-  //       EASYAPPLYJOBS.push(hrefs[i]);
-  //     }
-  //   }
-  // }
+    /* * * * * 
+      -> Go to the page
+      -> Check for module
+      -> Click the apply button
+      -> Input applicant's name
+      -> Select Resume
+      -> Sumbit
+    * * * * */
+    await page.goto(EASYAPPLYJOBS[i]).catch(err => console.log(err));
+    await page.waitForNavigation().catch(err => console.log(err));
 
-  // LOOPING THROUGH ^ ARRAY OF GlassDoor JOBS TO APPLY: 
-  
+    /* * * * * 
+      Sometimes GlassDoor has a random module pop up with information, so this will allow us to close that module
+    * * * * */
+    // console.log('Checking for module');
+    // await page.waitFor(3000);
+    // const clExists = await page.evaluate(() => {
+    //   return document.getElementsByClassName('mfp-close').length !== 0;
+    // }).catch(err => console.log(err));
+    
+    // if (clExists) {
+    //   await page.click('.mfp-close').catch(err => console.log(err));
+    // }
+
+    // click to apply
+    const APPLY_BTN = '.ezApplyBtn';
+    await page.click(APPLY_BTN).catch(err => console.log(err));
+    await page.waitForNavigation().catch(err => console.log(err));
+
+    
+
+    // fill in user's name
+    const INPUT_NAME = '#ApplicantName';
+    await page.click(INPUT_NAME).catch(err => console.log(err));
+    await page.keyboard.type(CREDS.name).catch(err => console.log(err));
+
+    // select resume
+    await page.select('select#ExistingResume', 'Resume.pdf').catch(err => console.log(err));
+    
+    // SUBMIT!
+    const SUMBIT_BTN = '#SubmitBtn';
+    await page.click(SUMBIT_BTN).then(success => {
+      SUCCESSES[EASYAPPLYJOBS[i]] = true;
+    }, error => {
+      SUCCESSES[EASYAPPLYJOBS[i]] = false;
+    });
+  };
+  console.log(SUCCESSES);
+
   // for(let i = 0; i < EASYAPPLYJOBS.length - 1; i += 1) {
   //   await page.goto(EASYAPPLYJOBS[i]);
     
