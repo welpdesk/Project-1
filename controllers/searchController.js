@@ -17,7 +17,7 @@ searchController.results = (req, res)=>{
     console.log('searchController.results');
     const fetch = require('node-fetch');
 
-    fetch("http://api.glassdoor.com/api/api.htm?t.p=216072&t.k=gnFZ3pppFCq&userip=67.245.145.191&useragent=Mozilla&format=json&v=1&action=jobs-stats&returnStates=true&admLevelRequested=1").then(  function (response){
+    fetch("http://api.glassdoor.com/api/api.htm?t.p=216072&t.k=gnFZ3pppFCq&userip=67.245.145.191&useragent=Mozilla&format=json&v=1&action=jobs-stats&returnstates=true&admLevelRequested=1").then(  function (response){
           //"http://api.glassdoor.com/api/api.htm?t.p=216072&t.k=n07aR34Lk3Y&userip=67.245.145.191&useragent=Mozilla&format=json&v=1&action=jobs-stats&returnStates=true&admLevelRequested=1"
         //c(response.json())
     
