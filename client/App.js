@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import Homepage from './Homepage'
 
-class 
 
 ReactDOM.render(
-    <h1>Hello World</h1>,
+    < Homepage />,
     document.getElementById('root')
 );

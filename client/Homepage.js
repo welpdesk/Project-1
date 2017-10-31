@@ -1,20 +1,15 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import List from './List'
 
-const relJobs = () => {
-    return <h1>Relevant Jobs</h1>
+const Homepage = () => {
+    return (
+        <div className="Homepage">
+            <List title ={'Relevant Jobs'}/>
+            <List title = {'You have Applied To These Jobs:'}/>
+        </div>
+    )
 }
 
-const appliedTo = () =>{
-    
-}
 
-const listMaker = () =>{
-
-}
-
-ReactDOM.render(
-    <h1></h1>
-)
-
-// module.exports = FeedItem;
+ module.exports =Homepage;

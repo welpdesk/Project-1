@@ -1,0 +1,19 @@
+/* body{
+    background: pink;
+} */
+.listsOfJobs{
+    border: 1px solid black;
+    display: inline-block;
+    width: 50%;
+}
+.listsOfJobs ul{
+    border: 1px solid pink;
+}
+
+.listsOfJobs h1{
+    border:1px solid aquamarine;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2em;
+    text-align: center;
+    color: royalblue;
+}
