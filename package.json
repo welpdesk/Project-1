@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
+    "webpack": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,10 +29,19 @@
   "dependencies": {
     "express": "^4.16.2",
     "mongoose": "^4.12.4",
-    "puppeteer": "^0.12.0"
+    "puppeteer": "^0.12.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "static": "^2.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "morgan": "^1.9.0",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
   }
 }
