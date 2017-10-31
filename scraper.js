@@ -42,7 +42,7 @@ async function run() {
   
   await page.click(SIGNIN_BTN).catch(err => console.log(err));
 
-  await page.waitForNavigation();
+  await page.waitForNavigation().catch(err => console.log(err));
 
   const SEARCH_QUERY = 'java developer';
   const URL = `https://www.glassdoor.com/Job/jobs.htm?clickSource=searchBtn&typedKeyword=${SEARCH_QUERY}&sc.keyword=${SEARCH_QUERY}`;
@@ -62,7 +62,7 @@ async function run() {
       check if module pops up and close -- GlassDoor has an module that pops up each time a pagination page is navigated to
     * * * * */
     // waiting for module to load
-    await page.waitFor(3000);
+    await page.waitFor(3000).catch(err => console.log(err));
     const clExists = await page.evaluate(() => {
       return document.getElementsByClassName('mfp-close').length !== 0;
     }).catch(err => console.log(err));
@@ -85,12 +85,6 @@ async function run() {
         let div = node.childNodes[1].childNodes[1].childNodes[1];
         return (div !== undefined) ? div.getAttribute('class') === 'alignRt' : false
       });
-      
-      // job title
-      console.log(filtJobLinks[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML);
-      // company name
-      console.log(filtJobLinks[0].childNodes[1].childNodes[1].childNodes[0].innerHTML);
-      
 
       // retrieve only the links from the href attributes in li elements
       const onePageJobArr = filtJobLinks.map((node) => {
@@ -98,10 +92,19 @@ async function run() {
 
         // default value 
         jobObj.applied = false;
+
+        // data-id attribute on li element on glassdoor's website
+        jobObj.dataId = node.getAttribute('data-id');
+
+        // data-emp-id attribute on li element on glassdoor's website
+        jobObj.dataEmpId = node.getAttribute('data-emp-id');
+
         // job title
         jobObj.title = node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML;
+
         // company name
         jobObj.company = node.childNodes[1].childNodes[1].childNodes[0].innerHTML;
+
         // link to application
         jobObj.link = node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
 
@@ -145,7 +148,7 @@ async function run() {
       Sometimes GlassDoor has a random module pop up with information, so this will allow us to close that module
     * * * * */
     console.log('Checking for module');
-    await page.waitFor(3000);
+    await page.waitFor(3000).catch(err => console.log(err));
     const clExists = await page.evaluate(() => {
       return document.getElementsByClassName('mfp-close').length !== 0;
     }).catch(err => console.log(err));
@@ -165,12 +168,12 @@ async function run() {
     await page.click(INPUT_NAME).catch(err => console.log(err));
 
     // clear form inputs
-    await page.keyboard.down('Shift');
+    await page.keyboard.down('Shift').catch(err => console.log(err));
     for (let i = 0; i < 50; i++)
-      await page.keyboard.press('ArrowLeft');
-    await page.keyboard.up('Shift');
+      await page.keyboard.press('ArrowLeft').catch(err => console.log(err));
+    await page.keyboard.up('Shift').catch(err => console.log(err));
     
-    await page.keyboard.press('Backspace');
+    await page.keyboard.press('Backspace').catch(err => console.log(err));
 
     await page.keyboard.type(CREDS.name).catch(err => console.log(err));
 
@@ -181,14 +184,14 @@ async function run() {
     console.log('Submitting');
     const SUMBIT_BTN = '#SubmitBtn';
     await page.click(SUMBIT_BTN).catch(err => console.log(err));
-    await page.waitFor(5000);
+    await page.waitFor(5000).catch(err => console.log(err));
     
     let succExists = false;
     succExists = await page.evaluate(() => {
       const yo = document.getElementsByClassName('successBox').length !== 0;
       console.log(yo);
       return yo;
-    });
+    }).catch(err => console.log(err));
 
     if (succExists) EASYAPPLYJOBS[i].applied = true;
     else EASYAPPLYJOBS[i].applied = false;
