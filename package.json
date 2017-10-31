@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "webpack": "webpack",
+    "sstart": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,7 +33,10 @@
     "puppeteer": "^0.12.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "static": "^2.0.0"
+    "static": "^2.0.0",
+    "passport": "^0.4.0",
+    "node-fetch": "^1.7.3",
+    "puppeteer": "^0.12.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

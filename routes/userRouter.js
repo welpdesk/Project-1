@@ -9,4 +9,4 @@ module.exports = userRouter;
 
 
 
-await page.click(APPLY_BTN)
+// await page.click(APPLY_BTN)
