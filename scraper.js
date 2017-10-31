@@ -8,9 +8,7 @@ const util = require('util');
 async function run() {
   // instantiating a browser - with property headless: false (so we can see it working)
   // By default, it is true. 
-  const browser = await puppeteer.launch({
-    headless: false
-  });
+  const browser = await puppeteer.launch();
 
   // now we need to instantiate a new page 
   const page = await browser.newPage();
@@ -46,7 +44,7 @@ async function run() {
 
   await page.waitForNavigation();
 
-  const SEARCH_QUERY = 'software engineer';
+  const SEARCH_QUERY = 'java developer';
   const URL = `https://www.glassdoor.com/Job/jobs.htm?clickSource=searchBtn&typedKeyword=${SEARCH_QUERY}&sc.keyword=${SEARCH_QUERY}`;
   
   await page.goto(URL).catch(err => console.log(err));
@@ -59,7 +57,7 @@ async function run() {
   const NEXT_PAGE_SELECTOR = 'li.next';
   let nextExists = true;
   let count = 0;
-  while (count === 0) {
+  while (count < 1) {
     /* * * * * 
       check if module pops up and close -- GlassDoor has an module that pops up each time a pagination page is navigated to
     * * * * */
@@ -78,6 +76,7 @@ async function run() {
       -> then retrieves all href attributes for the links to those listings
     * * * * */
     const temp = await page.evaluate(() => {
+
       // put all li elements containing job results into an array
       const jobListElems = Array.from(document.getElementsByClassName('jl'));
 
@@ -87,11 +86,31 @@ async function run() {
         return (div !== undefined) ? div.getAttribute('class') === 'alignRt' : false
       });
       
-      // retrieve only the links from the href attributes in li elements
-      const links = filtJobLinks.map((node) => node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href);
+      // job title
+      console.log(filtJobLinks[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML);
+      // company name
+      console.log(filtJobLinks[0].childNodes[1].childNodes[1].childNodes[0].innerHTML);
       
-      return links
+
+      // retrieve only the links from the href attributes in li elements
+      const onePageJobArr = filtJobLinks.map((node) => {
+        const jobObj = {};
+
+        // default value 
+        jobObj.applied = false;
+        // job title
+        jobObj.title = node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML;
+        // company name
+        jobObj.company = node.childNodes[1].childNodes[1].childNodes[0].innerHTML;
+        // link to application
+        jobObj.link = node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
+
+        return jobObj;
+      });
+      
+      return onePageJobArr;
     }).catch(err => console.log(err));
+
     EASYAPPLYJOBS.push(...temp);
 
     /* * * * * 
@@ -104,10 +123,6 @@ async function run() {
     count++;
     if (nextExists) await page.click(NEXT_PAGE_SELECTOR).catch(err => console.log(err));
   }
-  // console.log('ALL JOBS >>>>>>>>>>>>>>>>>>>>>>>>>>>');
-  // console.log(EASYAPPLYJOBS);
-
-  const SUCCESSES = {};
 
   /* * * * * 
     Looping through all of the links in the array and applying to those jobs
@@ -123,53 +138,64 @@ async function run() {
       -> Select Resume
       -> Sumbit
     * * * * */
-    // console.log('Going to apply page');
-    await page.goto(EASYAPPLYJOBS[i]).catch(err => console.log(err));
+    console.log('Going to apply page');
+    await page.goto(EASYAPPLYJOBS[i].link).catch(err => console.log(err));
 
     /* * * * * 
       Sometimes GlassDoor has a random module pop up with information, so this will allow us to close that module
     * * * * */
-    // console.log('Checking for module');
-    // await page.waitFor(3000);
-    // const clExists = await page.evaluate(() => {
-    //   return document.getElementsByClassName('mfp-close').length !== 0;
-    // }).catch(err => console.log(err));
+    console.log('Checking for module');
+    await page.waitFor(3000);
+    const clExists = await page.evaluate(() => {
+      return document.getElementsByClassName('mfp-close').length !== 0;
+    }).catch(err => console.log(err));
     
-    // if (clExists) {
-    //   await page.click('.mfp-close').catch(err => console.log(err));
-    // }
+    if (clExists) {
+      await page.click('.mfp-close').catch(err => console.log(err));
+    }
 
     // click to apply
-    // console.log('Clicking apply btn');
+    console.log('Clicking apply btn');
     const APPLY_BTN = '.ezApplyBtn';
     await page.click(APPLY_BTN).catch(err => console.log(err));
     await page.waitForNavigation();
 
-    // clear form inputs
-    await page.evaluate(() => document.getElementById('ApplyJobForm').reset());
-
     // fill in user's name
     const INPUT_NAME = '#ApplicantName';
     await page.click(INPUT_NAME).catch(err => console.log(err));
+
+    // clear form inputs
+    await page.keyboard.down('Shift');
+    for (let i = 0; i < 50; i++)
+      await page.keyboard.press('ArrowLeft');
+    await page.keyboard.up('Shift');
+    
+    await page.keyboard.press('Backspace');
+
     await page.keyboard.type(CREDS.name).catch(err => console.log(err));
 
     // select resume
     await page.select('select#ExistingResume', 'Resume.pdf').catch(err => console.log(err));
     
     // SUBMIT!
-    // console.log('Submitting');
+    console.log('Submitting');
     const SUMBIT_BTN = '#SubmitBtn';
     await page.click(SUMBIT_BTN).catch(err => console.log(err));
-    await page.waitFor(3000);
-    const errExists = await page.evaluate(() => document.getElementById('#FormErrHdr') !== undefined);
-    const succExists = await page.evaluate(() => document.getElementsByClassName('successBox gdAlertBox noMargBot').length !== 0);
-    // console.log('errSubmitting', errExists);
-    // console.log('succSubmitting', succExists);
-    if (errExists) SUCCESSES[EASYAPPLYJOBS[i]] = false;
-    else if (succExists) SUCCESSES[EASYAPPLYJOBS[i]] = true;
+    await page.waitFor(5000);
+    
+    let succExists = false;
+    succExists = await page.evaluate(() => {
+      const yo = document.getElementsByClassName('successBox').length !== 0;
+      console.log(yo);
+      return yo;
+    });
+
+    if (succExists) EASYAPPLYJOBS[i].applied = true;
+    else EASYAPPLYJOBS[i].applied = false;
   };
-  // console.log('Successes >>>>>>>>>>>>>>>>>>>>>>>>>>>');
-  // console.log(SUCCESSES);
+  console.log(EASYAPPLYJOBS);
+
+  browser.close();
 
 } 
 
