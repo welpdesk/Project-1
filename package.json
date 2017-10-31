@@ -35,8 +35,7 @@
     "react-dom": "^16.0.0",
     "static": "^2.0.0",
     "passport": "^0.4.0",
-    "node-fetch": "^1.7.3",
-    "puppeteer": "^0.12.0"
+    "node-fetch": "^1.7.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
