@@ -10,7 +10,4 @@ const LoginScreen =()=>{
     )
 }
 
-ReactDOM.render(
-    <LoginScreen/>,
-    document.getElementById('root')
-)
+export default LoginScreen;
