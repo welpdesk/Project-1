@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom
 
 class PrivateRoute extends Component {
   render() {
+    console.log('inside of pRivate Route', this.props);
     return (
-      <Route render={ props => { return ((this.props.isAuth) ? <this.props.component {...this.props}/> : <Redirect to='/' />) } } />
+      <Route render={ props => { return ((this.props.isAuth) ?  <Redirect to='/home' /> : <Redirect from='/' to='/' />) } } />
     );
   }
 }
