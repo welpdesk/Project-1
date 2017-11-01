@@ -8,7 +8,9 @@ const util = require('util');
 async function run() {
   // instantiating a browser - with property headless: false (so we can see it working)
   // By default, it is true. 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: false
+  });
 
   // now we need to instantiate a new page 
   const page = await browser.newPage();
@@ -188,78 +190,15 @@ async function run() {
     
     let succExists = false;
     succExists = await page.evaluate(() => {
-      const yo = document.getElementsByClassName('successBox').length !== 0;
-      console.log(yo);
-      return yo;
+      return document.getElementsByClassName('successBox').length !== 0;
     }).catch(err => console.log(err));
 
     if (succExists) EASYAPPLYJOBS[i].applied = true;
     else EASYAPPLYJOBS[i].applied = false;
   };
-  console.log(EASYAPPLYJOBS);
+  //console.log(EASYAPPLYJOBS);
 
   browser.close();
-
 } 
 
 run();
-
-// async function getLinks(page) {
-
-
-  // return await page.evaluate(() => {
-  //   // put all li elements containing job results into an array
-  //   const jobListElems = Array.from(document.getElementsByClassName('jl'));
-
-  //   // filter the li elements so that the array will only contain those with a div that indicates easy apply is available (one click apply - through glassdoor and not external site)
-  //   const filtJobLinks = jobListElems.filter((node)=> {
-  //     let div = node.childNodes[1].childNodes[1].childNodes[1];
-  //     return div !== undefined && div.childNodes[0].getAttribute('class') === 'easyApply';
-  //   });
-
-  //   // retrieve only the links from the href attributes in li elements
-  //   const links = filtJobLinks.map((node) => {
-  //     return node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
-  //   });
-  //   return links;
-  // });
-// }
-
-
-// const NEXT_PAGE_SELECTOR = 'li.next';
-// const nextExists = true;
-// const links = [];
-// while (nextExists) {
-//   await page.waitForNavigation();
-//   console.log('next truthy', nextExists);
-//   // getLinks(page).then(result=>{
-//   //   console.log('result', result);
-//   // });
-
-
-//   await page.evaluate(() => {
-//     // put all li elements containing job results into an array
-//     const jobListElems = Array.from(document.getElementsByClassName('jl'));
-
-//     // filter the li elements so that the array will only contain those with a div that indicates easy apply is available (one click apply - through glassdoor and not external site)
-//     const filtJobLinks = jobListElems.filter((node)=> {
-//       let div = node.childNodes[1].childNodes[1].childNodes[1];
-//       return div !== undefined && div.childNodes[0].getAttribute('class') === 'easyApply';
-//     });
-
-//     // retrieve only the links from the href attributes in li elements
-//     filtJobLinks.map((node) => {
-//       links.push(node.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href);
-//     });
-
-//   });
-
-//   //console.log(links);
-
-//   nextExists = await page.evaluate(() => {
-//     const arr = Array.from(document.getElementsByClassName('next'));
-//     return arr[0] !== undefined;
-//   });
-//   if (nextExists) await page.click(NEXT_PAGE_SELECTOR);
-// }
-// console.log('allLinks', links);
