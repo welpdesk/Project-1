@@ -43,11 +43,18 @@ appl.use(express.static('./build'));
 appl.post('/login', passport.authenticate('local', { successRedirect: '/success', failureRedirect: '/failure' }));
 
 appl.get('/success', (req, res) => {
-  res.status(200).send('Login Successful');
+  console.log('inside the server /succes')
+  let successResp = {
+    message : 'Login Successful'
+  }
+  res.status(200).json(JSON.stringify(successResp));
 });
 
 appl.get('/failure', (req, res) => {
-  res.status(401).send('Login Failed');
+  let successResp = {
+    message : 'Login Failed'
+  }
+  res.status(401).json(JSON.stringify(successResp));
 });
 
 const User = require('./db/userModel.js');

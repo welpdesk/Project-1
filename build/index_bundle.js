@@ -2432,6 +2432,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _createBrowserHistory = __webpack_require__(42);
+
+var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
+
 var _reactRouterDom = __webpack_require__(23);
 
 var _reactDom = __webpack_require__(13);
@@ -2458,18 +2462,70 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var history = (0, _createBrowserHistory2.default)();
+var location = history.location;
+
 var App = function (_Component) {
   _inherits(App, _Component);
 
   function App() {
     _classCallCheck(this, App);
 
-    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+
+    _this.state = { username: '', password: '', isAuth: false };
+    //changes state of input
+    _this.onUsernameChange = _this.onUsernameChange.bind(_this);
+    _this.onPasswordChange = _this.onPasswordChange.bind(_this);
+    //this is API to our server 
+    _this.logIntoPage = _this.logIntoPage.bind(_this);
+    return _this;
   }
 
   _createClass(App, [{
+    key: 'onUsernameChange',
+    value: function onUsernameChange(event) {
+      this.setState({ username: event.target.value });
+    }
+  }, {
+    key: 'onPasswordChange',
+    value: function onPasswordChange(event) {
+      this.setState({ password: event.target.value });
+    }
+  }, {
+    key: 'logIntoPage',
+    value: function logIntoPage() {
+      var _this2 = this;
+
+      console.log('heyyyy');
+      var body = { username: this.state.username, password: this.state.password };
+      console.log('bodddyyyy>>>', body);
+      fetch('/login', {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json" }
+      }).then(function (resp) {
+        if (resp.status === 200) {
+          _this2.setState({ isAuth: true });
+          fetch('/home');
+          // console.log('logging HISTORY BEFORE',history)
+          // history.push('/home')
+          // console.log('logging HISTORY AFTER PUSH',history)
+          // history.goBack();
+        }
+        if (resp.status === 401) {
+          _this2.setState({ isAuth: false });
+        }
+        console.log('consoling inside of  stt', _this2.state);
+      }).catch(function (err) {
+        return console.log(err);
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       return _react2.default.createElement(
         _reactRouterDom.BrowserRouter,
         null,
@@ -2477,10 +2533,10 @@ var App = function (_Component) {
           _reactRouterDom.Switch,
           null,
           _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
-              return _react2.default.createElement(_LoginScreen2.default, null);
+              return _react2.default.createElement(_LoginScreen2.default, { logIntoPage: _this3.logIntoPage, onPasswordChange: _this3.onPasswordChange, onUsernameChange: _this3.onUsernameChange });
             } }),
           _react2.default.createElement(_reactRouterDom.Route, { path: '/register', render: function render() {} }),
-          _react2.default.createElement(_PrivateRoute2.default, { path: '/home', component: _Homepage2.default, isAuth: true })
+          _react2.default.createElement(_PrivateRoute2.default, { path: '/home', component: _Homepage2.default, isAuth: this.state.isAuth })
         )
       );
     }
@@ -25746,6 +25802,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -25760,13 +25818,39 @@ var _Login2 = _interopRequireDefault(_Login);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var LoginScreen = function LoginScreen() {
-    return _react2.default.createElement(
-        'div',
-        { 'class': 'loginWindow' },
-        _react2.default.createElement(_Login2.default, null)
-    );
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LoginScreen = function (_Component) {
+    _inherits(LoginScreen, _Component);
+
+    function LoginScreen(props) {
+        _classCallCheck(this, LoginScreen);
+
+        return _possibleConstructorReturn(this, (LoginScreen.__proto__ || Object.getPrototypeOf(LoginScreen)).call(this, props));
+    }
+
+    _createClass(LoginScreen, [{
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'loginWindow' },
+                _react2.default.createElement(
+                    'h1',
+                    null,
+                    'Log in'
+                ),
+                _react2.default.createElement(_Login2.default, { logIntoPage: this.props.logIntoPage, onPasswordChange: this.props.onPasswordChange, onUsernameChange: this.props.onUsernameChange })
+            );
+        }
+    }]);
+
+    return LoginScreen;
+}(_react.Component);
 
 exports.default = LoginScreen;
 
@@ -25801,41 +25885,20 @@ var Login = function (_Component) {
   function Login(props) {
     _classCallCheck(this, Login);
 
-    var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
-
-    _this.state = { value: '', password: '' };
-    _this.handleChange = _this.handleChange.bind(_this);
-    _this.handlePasswordChange = _this.handlePasswordChange.bind(_this);
-    _this.handleSubmit = _this.handleSubmit.bind(_this);
-    return _this;
+    return _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
   }
 
   _createClass(Login, [{
-    key: 'handleChange',
-    value: function handleChange(event) {
-      this.setState({ value: event.target.value });
-    }
-  }, {
-    key: 'handlePasswordChange',
-    value: function handlePasswordChange(event) {
-      this.setState({ password: event.target.value });
-    }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(event) {
-      event.preventDefault();
-    }
-  }, {
     key: 'render',
     value: function render() {
-      _react2.default.createElement(
-        'form',
-        { onSubmit: this.props.onSubmit },
-        _react2.default.createElement(Input, { type: 'text', name: 'username', placeholder: 'username' }),
-        _react2.default.createElement(Input, { type: 'password', name: 'password', placeholder: 'password' }),
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement('input', { type: 'text', name: 'username', placeholder: 'username', onChange: this.props.onUsernameChange }),
+        _react2.default.createElement('input', { type: 'password', name: 'password', placeholder: 'password', onChange: this.props.onPasswordChange }),
         _react2.default.createElement(
           'button',
-          null,
+          { onClick: this.props.logIntoPage },
           ' Sign In'
         )
       );
@@ -25888,8 +25951,9 @@ var PrivateRoute = function (_Component) {
     value: function render() {
       var _this2 = this;
 
+      console.log('inside of pRivate Route', this.props);
       return _react2.default.createElement(_reactRouterDom.Route, { render: function render(props) {
-          return _this2.props.isAuth ? _react2.default.createElement(_this2.props.component, _this2.props) : _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' });
+          return _this2.props.isAuth ? _react2.default.createElement(_reactRouterDom.Redirect, { to: '/home' }) : _react2.default.createElement(_reactRouterDom.Redirect, { from: '/', to: '/' });
         } });
     }
   }]);
@@ -25918,7 +25982,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var SearchBar = function SearchBar() {
 
-    return _react2.default.createElement("input", { type: "text", "class": "searchTerm", placeholder: "What are you looking for?" });
+    return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement("input", { type: "text", "class": "searchTerm", placeholder: "What are you looking for?" })
+    );
 };
 
 exports.default = SearchBar;

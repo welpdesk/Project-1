@@ -31,6 +31,7 @@
     "bcrypt": "^1.0.3",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "history": "^4.7.2",
     "mongoose": "^4.12.4",
     "node-fetch": "^1.7.3",
     "passport": "^0.4.0",
