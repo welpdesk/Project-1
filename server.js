@@ -31,7 +31,7 @@ appl.use(passport.session());
 mongoose.connect('mongodb://jolaya182:marieo23@ds141175.mlab.com:41175/glassdoorscrape', () => {	
     console.log('Connected with javis mongo.js');
 });
-//appl.use(express.static('static'));
+appl.use(express.static('./build'));
 
 //duplicate of appl.get not necessary but another way of writing line 21
 // appl.get('/login',  (req, res)=>{res.sendFile(path.join(__dirname , '../static/login.html'))} );
@@ -59,14 +59,21 @@ appl.post('/signup', userController.createUser);
 
 
 
-appl.get('/', (req, res, next) => {console.log('req.body', req.body) ;next();},(req, res)=>{res.sendFile(path.join(__dirname , '../static/index.html'))});
-appl.get('/register',(req, res)=>{res.sendFile(path.join(__dirname , '../static/register.html'))});
+//appl.get('/', (req, res, next) => {console.log('req.body', req.body) ;next();},(req, res)=>{res.sendFile(path.join(__dirname , '../static/index.html'))});
+//appl.get('/register',(req, res)=>{res.sendFile(path.join(__dirname , '../static/register.html'))});
 appl.post('/', userController.createUser);
 appl.post('/search', (req, res, next) => {console.log('req.body', req.body) ;next();}, userController.findUser, searchController.home);
 /*appl.get('/addItem',  (req, res)=>{res.sendFile(path.join(__dirname , '../static/additem.html'))} );
 */
 appl.get("/searchBar", searchController.searchBar  );
 appl.post("/results", searchController.results  );
+
+
+// ensures that all routes are to be handled by REACT
+appl.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './build/index.html'));
+});
+
 
 
 appl.listen(3000, ()=>{console.log("listening to port 3000") });
