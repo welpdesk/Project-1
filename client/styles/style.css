@@ -1,0 +1,22 @@
+/* body{
+    background: pink;
+} */
+.Homepage{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+.listsOfJobs{
+    border: 1px solid black;
+}
+.listsOfJobs ul{
+    border: 1px solid pink;
+}
+
+.listsOfJobs h1{
+    border:1px solid aquamarine;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2em;
+    text-align: center;
+    color: royalblue;
+}
