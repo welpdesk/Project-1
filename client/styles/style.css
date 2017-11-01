@@ -1,10 +1,13 @@
 /* body{
     background: pink;
 } */
+.Homepage{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
 .listsOfJobs{
     border: 1px solid black;
-    display: inline-block;
-    width: 50%;
 }
 .listsOfJobs ul{
     border: 1px solid pink;
