@@ -12,4 +12,4 @@ const Homepage = () => {
 }
 
 
- module.exports =Homepage;
+ module.exports = Homepage;
