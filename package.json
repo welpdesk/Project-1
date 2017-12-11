@@ -2,18 +2,54 @@
   "name": "project-1",
   "version": "1.0.0",
   "description": "welpdesk",
-  "main": "cred.js",
+  "main": "server.js",
   "scripts": {
+    "start": "nodemon server.js",
+    "webpack": "webpack",
+    "sstart": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/welpdesk/Project-1.git"
   },
+  "keywords": [
+    "Puppeteer",
+    "Chrome",
+    "Headless",
+    "Scrapping",
+    "#WelpDesk",
+    "GetMeAJob"
+  ],
   "author": "Chris, Ben, Jac",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/welpdesk/Project-1/issues"
   },
-  "homepage": "https://github.com/welpdesk/Project-1#readme"
+  "homepage": "https://github.com/welpdesk/Project-1#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "history": "^4.7.2",
+    "mongoose": "^4.12.4",
+    "node-fetch": "^1.7.3",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "puppeteer": "^0.12.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-router-dom": "^4.2.2",
+    "static": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  }
 }
